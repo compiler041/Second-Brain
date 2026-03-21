@@ -37,7 +37,7 @@ export const view1note = async (
   user_id: number
 ) => {
   return await pool.query(
-    'SELECT * FROM notes WHERE user_id = $1 AND task_id = $2 AND title = $3',
-    [user_id, task_id, title]
+    'SELECT * FROM notes WHERE user_id = $1 AND title = $3',
+    [user_id,  title]
   );
 };
