@@ -1,9 +1,11 @@
 import { Router } from "express";
-import { createnote } from "./Notes.controller.js";
-import { searchnote, viewnotes } from "./Notes.controller.js";
-const noterouter=Router();
+import { createnote, viewnotes, searchnote, removeNote } from "./Notes.controller.js";
 
-noterouter.post("/createnote",createnote);
-noterouter.post("/viewnotes",viewnotes);
-noterouter.post("/createnote",searchnote);
+const noterouter = Router();
 
+noterouter.post("/", createnote);
+noterouter.get("/", viewnotes);
+noterouter.post("/search", searchnote);
+noterouter.delete("/:note_id", removeNote);
+
+export default noterouter;

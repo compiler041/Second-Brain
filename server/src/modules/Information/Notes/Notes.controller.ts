@@ -1,51 +1,67 @@
-import type { Request, Response } from "express";
-import { createnote as createNoteService, view1note, viewallnotes } from "./Notes.services.js";
+import type { Response } from "express";
+import type { AuthRequest } from "../../../types.js";
+import { createnote as createNoteService, viewallnotes, view1note, deletenote } from "./Notes.services.js";
 
-export const createnote = async (req: Request, res: Response) => {
-  const { title, context, visibility } = req.body;
+export const createnote = async (req: AuthRequest, res: Response) => {
+  try {
+    const { title, context, visibility } = req.body;
+    const user_id = req.user_id!;
 
-  if (!title || !context) {
-    return res.json({
-      message: "Missing Title or context"
-    });
+    if (!title || !context) {
+      return res.status(400).json({ error: "Missing title or context" });
+    }
+
+    const note = await createNoteService(
+      title,
+      context,
+      visibility ?? true,
+      user_id
+    );
+
+    return res.status(201).json(note);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
   }
-
-  const note = await createNoteService(
-    title,
-    context,
-    visibility ?? true,
-    new Date()
-  );
-
-  return res.json({
-    message: "Note created successfully",
-    note
-  });
 };
 
-export const viewnotes = async (req: Request, res: Response) => {
-  const { user_id } = req.params;
+export const viewnotes = async (req: AuthRequest, res: Response) => {
+  try {
+    const user_id = req.user_id!;
 
-  if (!user_id) {
-    return res.json({
-      message: "Please login!"
-    });
+    const notes = await viewallnotes(user_id);
+
+    return res.json(notes);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
   }
-
-  const result = await viewallnotes(Number(user_id));
-
-  return res.json(result.rows);
 };
 
-export const searchnote = async (req: Request, res: Response) => {
-  const { title } = req.body;
-  const { user_id, task_id } = req.params;
+export const searchnote = async (req: AuthRequest, res: Response) => {
+  try {
+    const { title } = req.body;
+    const user_id = req.user_id!;
 
-  const result = await view1note(
-    title,
-    Number(task_id),
-    Number(user_id)
-  );
+    const result = await view1note(title, user_id);
 
-  return res.json(result.rows);
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+export const removeNote = async (req: AuthRequest, res: Response) => {
+  try {
+    const user_id = req.user_id!;
+    const note_id = Number(req.params.note_id);
+
+    const deleted = await deletenote(note_id, user_id);
+
+    if (!deleted) {
+      return res.status(404).json({ error: "Note not found" });
+    }
+
+    return res.json({ message: "Note deleted successfully" });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
 };

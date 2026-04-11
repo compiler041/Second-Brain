@@ -1,0 +1,39 @@
+.favorites-page {
+  max-width: 900px;
+}
+
+.fav-categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.fav-category {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.fav-cat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.fav-cat-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.fav-cat-count {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}

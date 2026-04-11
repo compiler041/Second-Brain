@@ -1,6 +1,11 @@
 import { Router } from "express";
-import { createyt, search1, viewall } from "./yt.controller.js";
-const ytrouter=Router();
-ytrouter.post("/addyt", createyt);
-ytrouter.get("viewallyt",viewall);
-ytrouter.get("/viewone",search1);
+import { createyt, viewall, search1, removeVideo } from "./yt.controller.js";
+
+const ytrouter = Router();
+
+ytrouter.post("/", createyt);
+ytrouter.get("/", viewall);
+ytrouter.post("/search", search1);
+ytrouter.delete("/:video_id", removeVideo);
+
+export default ytrouter;

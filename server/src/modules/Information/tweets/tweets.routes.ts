@@ -1,8 +1,11 @@
 import { Router } from "express";
-import { alltweets, createtweet, singletweet } from "./tweets.controller.js";
+import { createtweet, alltweets, singletweet, removeTweet } from "./tweets.controller.js";
 
-const tweetrouter=Router();
+const tweetrouter = Router();
 
-tweetrouter.post("/addtweet",createtweet);
-tweetrouter.post("/addtweet",alltweets);
-tweetrouter.post("/addtweet",singletweet);
+tweetrouter.post("/", createtweet);
+tweetrouter.get("/", alltweets);
+tweetrouter.post("/search", singletweet);
+tweetrouter.delete("/:tweet_id", removeTweet);
+
+export default tweetrouter;
