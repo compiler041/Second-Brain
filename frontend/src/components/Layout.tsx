@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import {
   LayoutDashboard,
   CheckSquare,
@@ -12,6 +13,8 @@ import {
   Brain,
   Menu,
   X,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { useState } from 'react';
 import './Layout.css';
@@ -28,6 +31,7 @@ const navItems = [
 
 const Layout = () => {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -100,6 +104,13 @@ const Layout = () => {
             <span className="greeting">
               Welcome back, <strong>{user?.username || 'User'}</strong>
             </span>
+            <button
+              className="theme-toggle"
+              onClick={toggleTheme}
+              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
           </div>
         </div>
 

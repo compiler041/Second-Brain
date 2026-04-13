@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Brain, Eye, EyeOff } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { Brain, Eye, EyeOff, Sun, Moon } from 'lucide-react';
 import './Auth.css';
 
 const Login = () => {
   const { login } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,6 +36,10 @@ const Login = () => {
         <div className="auth-orb auth-orb-2" />
         <div className="auth-orb auth-orb-3" />
       </div>
+
+      <button className="theme-toggle auth-theme-toggle" onClick={toggleTheme} title="Toggle theme">
+        {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+      </button>
 
       <div className="auth-card glass">
         <div className="auth-header">

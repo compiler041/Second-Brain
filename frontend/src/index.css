@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-:root {
+/* ===== DARK THEME (default) ===== */
+:root,
+[data-theme="dark"] {
   /* Background colors */
   --bg-primary: #0a0e1a;
   --bg-secondary: #111827;
@@ -42,6 +44,15 @@
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
   --shadow-glow: 0 0 40px rgba(124, 58, 237, 0.15);
 
+  /* Modal / Overlay */
+  --overlay-bg: rgba(0, 0, 0, 0.6);
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.06);
+
+  /* Scrollbar */
+  --scrollbar-thumb: #475569;
+  --scrollbar-thumb-hover: #64748b;
+
   /* Layout */
   --sidebar-width: 260px;
   --sidebar-collapsed: 72px;
@@ -55,6 +66,63 @@
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
   --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  color-scheme: dark;
+}
+
+/* ===== LIGHT THEME ===== */
+[data-theme="light"] {
+  /* Background colors */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --bg-elevated: rgba(0, 0, 0, 0.02);
+
+  /* Accent colors */
+  --accent-primary: #7c3aed;
+  --accent-primary-hover: #6d28d9;
+  --accent-secondary: #6366f1;
+  --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #6366f1 50%, #818cf8 100%);
+  --accent-glow: rgba(124, 58, 237, 0.15);
+
+  /* Text colors */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-accent: #7c3aed;
+
+  /* Status colors */
+  --success: #059669;
+  --success-bg: rgba(5, 150, 105, 0.08);
+  --warning: #d97706;
+  --warning-bg: rgba(217, 119, 6, 0.08);
+  --danger: #dc2626;
+  --danger-bg: rgba(220, 38, 38, 0.08);
+  --info: #2563eb;
+  --info-bg: rgba(37, 99, 235, 0.08);
+
+  /* Border */
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-color-hover: rgba(0, 0, 0, 0.15);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 40px rgba(124, 58, 237, 0.08);
+
+  /* Modal / Overlay */
+  --overlay-bg: rgba(0, 0, 0, 0.4);
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(0, 0, 0, 0.06);
+
+  /* Scrollbar */
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
+
+  color-scheme: light;
 }
 
 * {
@@ -75,6 +143,7 @@ body {
   color: var(--text-primary);
   min-height: 100vh;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #root {
@@ -115,12 +184,12 @@ input, textarea, select {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--text-muted);
+  background: var(--scrollbar-thumb);
   border-radius: 100px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Loading */
@@ -172,10 +241,10 @@ input, textarea, select {
 
 /* Utility classes */
 .glass {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--glass-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--glass-border);
 }
 
 .gradient-text {
@@ -248,7 +317,8 @@ input, textarea, select {
 }
 
 .btn-danger:hover {
-  background: #dc2626;
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 /* Card base */
@@ -401,7 +471,7 @@ input, textarea, select {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--overlay-bg);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -420,6 +490,7 @@ input, textarea, select {
   max-height: 85vh;
   overflow-y: auto;
   animation: slideUp 0.3s ease;
+  box-shadow: var(--shadow-lg);
 }
 
 .modal-header {
@@ -507,9 +578,33 @@ input, textarea, select {
   color: var(--text-muted);
 }
 
+/* Theme toggle */
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+}
+
+.theme-toggle:hover {
+  color: var(--text-accent);
+  border-color: var(--border-color-hover);
+  background: var(--bg-card-hover);
+  transform: rotate(15deg);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
-  :root {
+  :root,
+  [data-theme="dark"],
+  [data-theme="light"] {
     --sidebar-width: 0px;
   }
 

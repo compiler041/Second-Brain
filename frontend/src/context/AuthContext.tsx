@@ -2,6 +2,17 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
 import type { User } from '../types';
 import * as authApi from '../api/auth';
 
+// Demo mode: set to true to bypass backend API for auth
+const DEMO_MODE = true;
+const DEMO_USER: User = {
+  user_id: 1,
+  username: 'Vaibhav',
+  email: 'demo@secondbrain.com',
+  role: 'user',
+  created_at: new Date().toISOString(),
+};
+const DEMO_TOKEN = 'demo-jwt-token-for-local-dev';
+
 interface AuthContextType {
   user: User | null;
   token: string | null;
@@ -36,6 +47,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
+    if (DEMO_MODE) {
+      if (email === 'demo@secondbrain.com' && password === 'demo1234') {
+        localStorage.setItem('token', DEMO_TOKEN);
+        localStorage.setItem('user', JSON.stringify(DEMO_USER));
+        setToken(DEMO_TOKEN);
+        setUser(DEMO_USER);
+        return;
+      }
+      throw { response: { data: { error: 'Invalid demo credentials. Use demo@secondbrain.com / demo1234' } } };
+    }
     const data = await authApi.signin(email, password);
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
@@ -44,6 +65,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signup = async (username: string, email: string, password: string) => {
+    if (DEMO_MODE) {
+      const demoUser = { ...DEMO_USER, username, email };
+      localStorage.setItem('token', DEMO_TOKEN);
+      localStorage.setItem('user', JSON.stringify(demoUser));
+      setToken(DEMO_TOKEN);
+      setUser(demoUser);
+      return;
+    }
     const data = await authApi.signup(username, email, password);
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));

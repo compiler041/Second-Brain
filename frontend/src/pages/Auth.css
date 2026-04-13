@@ -21,6 +21,10 @@
   opacity: 0.4;
 }
 
+[data-theme="light"] .auth-orb {
+  opacity: 0.2;
+}
+
 .auth-orb-1 {
   width: 400px;
   height: 400px;
@@ -157,4 +161,12 @@
 
 .auth-switch a:hover {
   color: var(--accent-primary);
+}
+
+/* Theme toggle on auth pages */
+.auth-theme-toggle {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 10;
 }

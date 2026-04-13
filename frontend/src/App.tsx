@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import Login from './pages/Login';
@@ -21,49 +22,51 @@ const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          {/* Public routes */}
-          <Route
-            path="/login"
-            element={
-              <AuthRedirect>
-                <Login />
-              </AuthRedirect>
-            }
-          />
-          <Route
-            path="/signup"
-            element={
-              <AuthRedirect>
-                <Signup />
-              </AuthRedirect>
-            }
-          />
+    <ThemeProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+            {/* Public routes */}
+            <Route
+              path="/login"
+              element={
+                <AuthRedirect>
+                  <Login />
+                </AuthRedirect>
+              }
+            />
+            <Route
+              path="/signup"
+              element={
+                <AuthRedirect>
+                  <Signup />
+                </AuthRedirect>
+              }
+            />
 
-          {/* Protected routes */}
-          <Route
-            element={
-              <ProtectedRoute>
-                <Layout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/tasks" element={<Tasks />} />
-            <Route path="/notes" element={<Notes />} />
-            <Route path="/tweets" element={<Tweets />} />
-            <Route path="/videos" element={<Videos />} />
-            <Route path="/favorites" element={<Favorites />} />
-            <Route path="/settings" element={<Settings />} />
-          </Route>
+            {/* Protected routes */}
+            <Route
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/tasks" element={<Tasks />} />
+              <Route path="/notes" element={<Notes />} />
+              <Route path="/tweets" element={<Tweets />} />
+              <Route path="/videos" element={<Videos />} />
+              <Route path="/favorites" element={<Favorites />} />
+              <Route path="/settings" element={<Settings />} />
+            </Route>
 
-          {/* Catch-all */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+            {/* Catch-all */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
