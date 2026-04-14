@@ -28,6 +28,7 @@
 
 .note-card:hover {
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .note-card-header {
@@ -134,7 +135,7 @@
 }
 
 .vis-btn--active {
-  background: rgba(124, 58, 237, 0.12);
+  background: var(--accent-glow);
   border-color: var(--accent-primary);
-  color: var(--text-accent);
+  color: var(--accent-primary);
 }

@@ -125,7 +125,7 @@ const Notes = () => {
                   <Clock size={12} />
                   {new Date(note.created_at).toLocaleDateString()}
                 </span>
-                <span className={`badge ${note.visibility === 'public' ? 'badge-info' : 'badge-purple'}`}>
+                <span className={`badge ${note.visibility === 'public' ? 'badge-info' : 'badge-accent'}`}>
                   {note.visibility === 'public' ? <Eye size={11} /> : <EyeOff size={11} />}
                   {note.visibility}
                 </span>
@@ -146,7 +146,7 @@ const Notes = () => {
               </button>
             </div>
             <div className="note-viewer-meta">
-              <span className={`badge ${showViewer.visibility === 'public' ? 'badge-info' : 'badge-purple'}`}>
+              <span className={`badge ${showViewer.visibility === 'public' ? 'badge-info' : 'badge-accent'}`}>
                 {showViewer.visibility}
               </span>
               <span className="note-time">

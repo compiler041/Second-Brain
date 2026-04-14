@@ -41,7 +41,7 @@ const Settings = () => {
               <span><Mail size={14} /> {user?.email}</span>
               <span><Calendar size={14} /> Joined {user?.created_at ? new Date(user.created_at).toLocaleDateString() : '—'}</span>
             </div>
-            <span className="badge badge-purple">{user?.role || 'user'}</span>
+            <span className="badge badge-accent">{user?.role || 'user'}</span>
           </div>
         </div>
       </div>

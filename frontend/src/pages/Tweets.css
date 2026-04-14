@@ -25,6 +25,7 @@
 
 .tweet-card:hover {
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .tweet-card-header {
@@ -37,8 +38,8 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-sm);
-  background: rgba(59, 130, 246, 0.12);
-  color: #3b82f6;
+  background: rgba(108, 142, 191, 0.12);
+  color: #6C8EBF;
   display: flex;
   align-items: center;
   justify-content: center;

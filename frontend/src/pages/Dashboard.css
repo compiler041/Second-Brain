@@ -1,75 +1,50 @@
 .dashboard {
-  max-width: 1100px;
+  max-width: 960px;
 }
 
-/* Hero */
-.dashboard-hero {
-  position: relative;
-  padding: 36px 32px;
-  border-radius: var(--radius-lg);
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  margin-bottom: 28px;
-  overflow: hidden;
+/* ===== GREETING ===== */
+.dashboard-greeting {
+  margin-bottom: 32px;
 }
 
-.hero-content {
-  position: relative;
-  z-index: 1;
-}
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  background: rgba(124, 58, 237, 0.12);
-  color: var(--text-accent);
-  border-radius: 100px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  margin-bottom: 14px;
-}
-
-.dashboard-hero h1 {
-  font-size: 1.75rem;
-  font-weight: 800;
+.dashboard-greeting h1 {
+  font-size: 1.625rem;
+  font-weight: 700;
   letter-spacing: -0.02em;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  color: var(--text-primary);
 }
 
-.dashboard-hero p {
-  color: var(--text-secondary);
+.dashboard-greeting p {
   font-size: 0.9375rem;
-  max-width: 460px;
+  color: var(--text-secondary);
 }
 
-.hero-glow {
-  position: absolute;
-  right: -80px;
-  top: -80px;
-  width: 300px;
-  height: 300px;
-  background: var(--accent-primary);
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.15;
-}
-
-/* Stats */
+/* ===== STATS GRID ===== */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  margin-bottom: 32px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 36px;
 }
 
 .stat-card {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
   text-align: left;
   cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.stat-card:hover {
+  border-color: var(--border-color-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .stat-card:hover .stat-arrow {
@@ -78,8 +53,8 @@
 }
 
 .stat-icon {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -94,67 +69,100 @@
 }
 
 .stat-value {
-  font-size: 1.5rem;
-  font-weight: 800;
+  font-size: 1.375rem;
+  font-weight: 700;
   line-height: 1.2;
 }
 
 .stat-label {
   font-size: 0.8125rem;
   color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .stat-arrow {
   color: var(--text-muted);
   opacity: 0;
-  transform: translateX(-4px);
+  transform: translateX(-3px);
   transition: all var(--transition-fast);
 }
 
-/* Section header */
-.section-header {
-  margin-bottom: 16px;
-}
-
-.section-header h2 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1.125rem;
-  font-weight: 700;
-}
-
-/* Quick actions */
-.quick-actions {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
+/* ===== SECTIONS ===== */
+.dashboard-section {
   margin-bottom: 32px;
 }
 
-.quick-action-card {
+.section-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.75rem;
+}
+
+/* ===== QUICK ACTIONS ===== */
+.quick-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.quick-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 100px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+}
+
+.quick-action-btn:hover {
+  border-color: var(--border-color-hover);
+  background: var(--bg-card-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ===== FEATURE GRID ===== */
+.feature-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feature-card {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   padding: 14px 16px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  font-size: 0.875rem;
-  font-weight: 500;
+  cursor: pointer;
   transition: all var(--transition-normal);
-  text-align: left;
 }
 
-.quick-action-card:hover {
+.feature-card:hover {
   border-color: var(--border-color-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  background: var(--bg-card-hover);
 }
 
-.qa-icon {
-  width: 36px;
-  height: 36px;
+.feature-card:hover .feature-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.feature-icon {
+  width: 38px;
+  height: 38px;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -162,60 +170,44 @@
   flex-shrink: 0;
 }
 
-/* Feature grid */
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
+.feature-body {
+  flex: 1;
+  min-width: 0;
 }
 
-.feature-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.feature-body h3 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin-bottom: 2px;
 }
 
-.feature-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.feature-card h3 {
-  font-size: 1rem;
-  font-weight: 700;
-}
-
-.feature-card p {
+.feature-body p {
   font-size: 0.8125rem;
   color: var(--text-secondary);
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
-.feature-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--text-accent);
-  margin-top: auto;
-  transition: gap var(--transition-fast);
+.feature-arrow {
+  color: var(--text-muted);
+  opacity: 0;
+  transform: translateX(-3px);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
 }
 
-.feature-link:hover {
-  gap: 10px;
-}
-
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  .dashboard-hero h1 {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-greeting h1 {
     font-size: 1.375rem;
   }
-  
-  .dashboard-hero {
-    padding: 24px 20px;
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
   }
 }

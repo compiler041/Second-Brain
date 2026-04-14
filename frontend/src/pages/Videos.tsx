@@ -156,7 +156,7 @@ const Videos = () => {
                       <Clock size={12} />
                       {new Date(video.saved_at).toLocaleDateString()}
                     </span>
-                    <span className={`badge ${video.visibility === 'public' ? 'badge-info' : 'badge-purple'}`}>
+                    <span className={`badge ${video.visibility === 'public' ? 'badge-info' : 'badge-accent'}`}>
                       {video.visibility === 'public' ? <Eye size={11} /> : <EyeOff size={11} />}
                       {video.visibility}
                     </span>

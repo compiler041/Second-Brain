@@ -141,7 +141,7 @@ const Tweets = () => {
                   <Clock size={12} />
                   {new Date(tweet.saved_at).toLocaleDateString()}
                 </span>
-                <span className={`badge ${tweet.visibility === 'public' ? 'badge-info' : 'badge-purple'}`}>
+                <span className={`badge ${tweet.visibility === 'public' ? 'badge-info' : 'badge-accent'}`}>
                   {tweet.visibility === 'public' ? <Eye size={11} /> : <EyeOff size={11} />}
                   {tweet.visibility}
                 </span>
