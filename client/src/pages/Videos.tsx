@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useState, useEffect } from 'react';
 import {
   Plus,
   Search,
@@ -12,6 +11,7 @@ import {
   Play,
 } from 'lucide-react';
 import type { YouTubeVideo } from '../types';
+import * as youtubeApi from '../api/youtube';
 import './Videos.css';
 
 const extractVideoId = (url: string): string | null => {
@@ -22,7 +22,6 @@ const extractVideoId = (url: string): string | null => {
 };
 
 const Videos = () => {
-  const { user } = useAuth();
   const [videos, setVideos] = useState<YouTubeVideo[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,9 +29,25 @@ const Videos = () => {
     video_link: '',
     title: '',
     description: '',
-    visibility: 'private' as 'private' | 'public',
+    visibility: true,
   });
   const [loading, setLoading] = useState(false);
+  const [fetchLoading, setFetchLoading] = useState(true);
+
+  // Fetch all videos on mount
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const data = await youtubeApi.getAllVideos();
+        setVideos(data);
+      } catch (err) {
+        console.error('Failed to fetch videos:', err);
+      } finally {
+        setFetchLoading(false);
+      }
+    };
+    fetchVideos();
+  }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,34 +55,46 @@ const Videos = () => {
 
     setLoading(true);
     try {
-      const video: YouTubeVideo = {
-        video_id: Date.now(),
-        video_link: newVideo.video_link,
-        title: newVideo.title || 'Untitled Video',
-        description: newVideo.description,
-        visibility: newVideo.visibility,
-        user_id: user?.user_id || 0,
-        saved_at: new Date().toISOString(),
-      };
-      setVideos((prev) => [video, ...prev]);
-      setNewVideo({ video_link: '', title: '', description: '', visibility: 'private' });
+      const created = await youtubeApi.addVideo(
+        newVideo.video_link,
+        newVideo.title || 'Untitled Video',
+        newVideo.description
+      );
+      setVideos((prev) => [created, ...prev]);
+      setNewVideo({ video_link: '', title: '', description: '', visibility: true });
       setShowModal(false);
-    } catch {
-      // handle error
+    } catch (err) {
+      console.error('Failed to save video:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const deleteVideo = (id: number) => {
-    setVideos((prev) => prev.filter((v) => v.video_id !== id));
+  const deleteVideo = async (id: number) => {
+    try {
+      await youtubeApi.deleteVideo(id);
+      setVideos((prev) => prev.filter((v) => v.video_id !== id));
+    } catch (err) {
+      console.error('Failed to delete video:', err);
+    }
   };
 
   const filteredVideos = videos.filter(
     (v) =>
       v.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      v.description.toLowerCase().includes(searchQuery.toLowerCase())
+      (v.description || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (fetchLoading) {
+    return (
+      <div className="videos-page">
+        <div className="empty-state">
+          <VideoIcon />
+          <h3>Loading videos...</h3>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="videos-page">
@@ -156,9 +183,9 @@ const Videos = () => {
                       <Clock size={12} />
                       {new Date(video.saved_at).toLocaleDateString()}
                     </span>
-                    <span className={`badge ${video.visibility === 'public' ? 'badge-info' : 'badge-accent'}`}>
-                      {video.visibility === 'public' ? <Eye size={11} /> : <EyeOff size={11} />}
-                      {video.visibility}
+                    <span className={`badge ${video.visibility ? 'badge-info' : 'badge-accent'}`}>
+                      {video.visibility ? <Eye size={11} /> : <EyeOff size={11} />}
+                      {video.visibility ? 'public' : 'private'}
                     </span>
                   </div>
                 </div>
@@ -213,15 +240,15 @@ const Videos = () => {
                 <div className="visibility-toggle">
                   <button
                     type="button"
-                    className={`vis-btn ${newVideo.visibility === 'private' ? 'vis-btn--active' : ''}`}
-                    onClick={() => setNewVideo({ ...newVideo, visibility: 'private' })}
+                    className={`vis-btn ${!newVideo.visibility ? 'vis-btn--active' : ''}`}
+                    onClick={() => setNewVideo({ ...newVideo, visibility: false })}
                   >
                     <EyeOff size={14} /> Private
                   </button>
                   <button
                     type="button"
-                    className={`vis-btn ${newVideo.visibility === 'public' ? 'vis-btn--active' : ''}`}
-                    onClick={() => setNewVideo({ ...newVideo, visibility: 'public' })}
+                    className={`vis-btn ${newVideo.visibility ? 'vis-btn--active' : ''}`}
+                    onClick={() => setNewVideo({ ...newVideo, visibility: true })}
                   >
                     <Eye size={14} /> Public
                   </button>

@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useState, useEffect } from 'react';
 import {
   Plus,
   Search,
@@ -10,16 +9,32 @@ import {
   Clock,
 } from 'lucide-react';
 import type { Note } from '../types';
+import * as notesApi from '../api/notes';
 import './Notes.css';
 
 const Notes = () => {
-  const { user } = useAuth();
   const [notes, setNotes] = useState<Note[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [showViewer, setShowViewer] = useState<Note | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [newNote, setNewNote] = useState({ title: '', content: '', visibility: 'private' as 'private' | 'public' });
+  const [newNote, setNewNote] = useState({ title: '', context: '', visibility: true });
   const [loading, setLoading] = useState(false);
+  const [fetchLoading, setFetchLoading] = useState(true);
+
+  // Fetch all notes on mount
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const data = await notesApi.getAllNotes();
+        setNotes(data);
+      } catch (err) {
+        console.error('Failed to fetch notes:', err);
+      } finally {
+        setFetchLoading(false);
+      }
+    };
+    fetchNotes();
+  }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,34 +42,46 @@ const Notes = () => {
 
     setLoading(true);
     try {
-      const note: Note = {
-        note_id: Date.now(),
-        title: newNote.title,
-        content: newNote.content,
-        visibility: newNote.visibility,
-        user_id: user?.user_id || 0,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      setNotes((prev) => [note, ...prev]);
-      setNewNote({ title: '', content: '', visibility: 'private' });
+      const created = await notesApi.createNote(
+        newNote.title,
+        newNote.context,
+        newNote.visibility
+      );
+      setNotes((prev) => [created, ...prev]);
+      setNewNote({ title: '', context: '', visibility: true });
       setShowModal(false);
-    } catch {
-      // handle error
+    } catch (err) {
+      console.error('Failed to create note:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const deleteNote = (id: number) => {
-    setNotes((prev) => prev.filter((n) => n.note_id !== id));
+  const deleteNote = async (id: number) => {
+    try {
+      await notesApi.deleteNote(id);
+      setNotes((prev) => prev.filter((n) => n.note_id !== id));
+    } catch (err) {
+      console.error('Failed to delete note:', err);
+    }
   };
 
   const filteredNotes = notes.filter(
     (n) =>
       n.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      n.content.toLowerCase().includes(searchQuery.toLowerCase())
+      (n.context || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (fetchLoading) {
+    return (
+      <div className="notes-page">
+        <div className="empty-state">
+          <FileText />
+          <h3>Loading notes...</h3>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="notes-page">
@@ -117,17 +144,17 @@ const Notes = () => {
                 </button>
               </div>
               <p className="note-preview">
-                {note.content.substring(0, 120) || 'No content'}
-                {note.content.length > 120 ? '...' : ''}
+                {(note.context || '').substring(0, 120) || 'No content'}
+                {(note.context || '').length > 120 ? '...' : ''}
               </p>
               <div className="note-footer">
                 <span className="note-time">
                   <Clock size={12} />
                   {new Date(note.created_at).toLocaleDateString()}
                 </span>
-                <span className={`badge ${note.visibility === 'public' ? 'badge-info' : 'badge-accent'}`}>
-                  {note.visibility === 'public' ? <Eye size={11} /> : <EyeOff size={11} />}
-                  {note.visibility}
+                <span className={`badge ${note.visibility ? 'badge-info' : 'badge-accent'}`}>
+                  {note.visibility ? <Eye size={11} /> : <EyeOff size={11} />}
+                  {note.visibility ? 'public' : 'private'}
                 </span>
               </div>
             </div>
@@ -146,8 +173,8 @@ const Notes = () => {
               </button>
             </div>
             <div className="note-viewer-meta">
-              <span className={`badge ${showViewer.visibility === 'public' ? 'badge-info' : 'badge-accent'}`}>
-                {showViewer.visibility}
+              <span className={`badge ${showViewer.visibility ? 'badge-info' : 'badge-accent'}`}>
+                {showViewer.visibility ? 'public' : 'private'}
               </span>
               <span className="note-time">
                 <Clock size={12} />
@@ -155,7 +182,7 @@ const Notes = () => {
               </span>
             </div>
             <div className="note-viewer-content">
-              {showViewer.content || 'No content'}
+              {showViewer.context || 'No content'}
             </div>
           </div>
         </div>
@@ -189,8 +216,8 @@ const Notes = () => {
                   className="form-textarea"
                   placeholder="Write your note..."
                   rows={6}
-                  value={newNote.content}
-                  onChange={(e) => setNewNote({ ...newNote, content: e.target.value })}
+                  value={newNote.context}
+                  onChange={(e) => setNewNote({ ...newNote, context: e.target.value })}
                 />
               </div>
               <div className="form-group">
@@ -198,15 +225,15 @@ const Notes = () => {
                 <div className="visibility-toggle">
                   <button
                     type="button"
-                    className={`vis-btn ${newNote.visibility === 'private' ? 'vis-btn--active' : ''}`}
-                    onClick={() => setNewNote({ ...newNote, visibility: 'private' })}
+                    className={`vis-btn ${!newNote.visibility ? 'vis-btn--active' : ''}`}
+                    onClick={() => setNewNote({ ...newNote, visibility: false })}
                   >
                     <EyeOff size={14} /> Private
                   </button>
                   <button
                     type="button"
-                    className={`vis-btn ${newNote.visibility === 'public' ? 'vis-btn--active' : ''}`}
-                    onClick={() => setNewNote({ ...newNote, visibility: 'public' })}
+                    className={`vis-btn ${newNote.visibility ? 'vis-btn--active' : ''}`}
+                    onClick={() => setNewNote({ ...newNote, visibility: true })}
                   >
                     <Eye size={14} /> Public
                   </button>

@@ -3,7 +3,7 @@ import type { User } from '../types';
 import * as authApi from '../api/auth';
 
 // Demo mode: set to true to bypass backend API for auth
-const DEMO_MODE = true;
+const DEMO_MODE = false;
 const DEMO_USER: User = {
   user_id: 1,
   username: 'Vaibhav',

@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useState, useEffect } from 'react';
 import {
   Plus,
   CheckCircle2,
@@ -10,16 +9,32 @@ import {
   X,
 } from 'lucide-react';
 import type { Task } from '../types';
+import * as tasksApi from '../api/tasks';
 import './Tasks.css';
 
 const Tasks = () => {
-  const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
   const [newTask, setNewTask] = useState({ title: '', description: '', due_date: '' });
   const [loading, setLoading] = useState(false);
+  const [fetchLoading, setFetchLoading] = useState(true);
+
+  // Fetch all tasks on mount
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const data = await tasksApi.getAllTasks();
+        setTasks(data);
+      } catch (err) {
+        console.error('Failed to fetch tasks:', err);
+      } finally {
+        setFetchLoading(false);
+      }
+    };
+    fetchTasks();
+  }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,46 +42,60 @@ const Tasks = () => {
 
     setLoading(true);
     try {
-      const task: Task = {
-        task_id: Date.now(),
-        title: newTask.title,
-        description: newTask.description,
-        due_date: newTask.due_date || null,
-        priority_id: null,
-        status: false,
-        user_id: user?.user_id || 0,
-        created_at: new Date().toISOString(),
-      };
-      setTasks((prev) => [task, ...prev]);
+      const created = await tasksApi.createTask(newTask.title, newTask.description);
+      setTasks((prev) => [created, ...prev]);
       setNewTask({ title: '', description: '', due_date: '' });
       setShowModal(false);
-    } catch {
-      // handle error
+    } catch (err) {
+      console.error('Failed to create task:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const toggleStatus = (id: number) => {
-    setTasks((prev) =>
-      prev.map((t) => (t.task_id === id ? { ...t, status: !t.status } : t))
-    );
+  const toggleStatus = async (id: number) => {
+    const task = tasks.find((t) => t.task_id === id);
+    if (!task) return;
+    try {
+      const updated = await tasksApi.updateTask(id, { status: !task.status });
+      setTasks((prev) =>
+        prev.map((t) => (t.task_id === id ? updated : t))
+      );
+    } catch (err) {
+      console.error('Failed to update task:', err);
+    }
   };
 
-  const deleteTask = (id: number) => {
-    setTasks((prev) => prev.filter((t) => t.task_id !== id));
+  const deleteTask = async (id: number) => {
+    try {
+      await tasksApi.deleteTask(id);
+      setTasks((prev) => prev.filter((t) => t.task_id !== id));
+    } catch (err) {
+      console.error('Failed to delete task:', err);
+    }
   };
 
   const filteredTasks = tasks.filter((t) => {
     const matchesSearch =
       t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.description.toLowerCase().includes(searchQuery.toLowerCase());
+      (t.description || '').toLowerCase().includes(searchQuery.toLowerCase());
     if (filter === 'active') return !t.status && matchesSearch;
     if (filter === 'completed') return t.status && matchesSearch;
     return matchesSearch;
   });
 
   const completedCount = tasks.filter((t) => t.status).length;
+
+  if (fetchLoading) {
+    return (
+      <div className="tasks-page">
+        <div className="empty-state">
+          <CheckCircle2 />
+          <h3>Loading tasks...</h3>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="tasks-page">

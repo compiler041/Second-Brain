@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useState, useEffect } from 'react';
 import {
   Plus,
   Search,
@@ -12,10 +11,10 @@ import {
   Link as LinkIcon,
 } from 'lucide-react';
 import type { Tweet } from '../types';
+import * as tweetsApi from '../api/tweets';
 import './Tweets.css';
 
 const Tweets = () => {
-  const { user } = useAuth();
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,9 +22,25 @@ const Tweets = () => {
     tweet_link: '',
     title: '',
     description: '',
-    visibility: 'private' as 'private' | 'public',
+    visibility: true,
   });
   const [loading, setLoading] = useState(false);
+  const [fetchLoading, setFetchLoading] = useState(true);
+
+  // Fetch all tweets on mount
+  useEffect(() => {
+    const fetchTweets = async () => {
+      try {
+        const data = await tweetsApi.getAllTweets();
+        setTweets(data);
+      } catch (err) {
+        console.error('Failed to fetch tweets:', err);
+      } finally {
+        setFetchLoading(false);
+      }
+    };
+    fetchTweets();
+  }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,34 +48,55 @@ const Tweets = () => {
 
     setLoading(true);
     try {
-      const tweet: Tweet = {
-        tweet_id: Date.now(),
-        tweet_link: newTweet.tweet_link,
-        title: newTweet.title,
-        description: newTweet.description,
-        visibility: newTweet.visibility,
-        user_id: user?.user_id || 0,
-        saved_at: new Date().toISOString(),
-      };
-      setTweets((prev) => [tweet, ...prev]);
-      setNewTweet({ tweet_link: '', title: '', description: '', visibility: 'private' });
+      const created = await tweetsApi.addTweet(
+        newTweet.tweet_link,
+        newTweet.title,
+        newTweet.description,
+        newTweet.visibility
+      );
+      setTweets((prev) => [created, ...prev]);
+      setNewTweet({ tweet_link: '', title: '', description: '', visibility: true });
       setShowModal(false);
-    } catch {
-      // handle error
+    } catch (err) {
+      console.error('Failed to save tweet:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const deleteTweet = (id: number) => {
-    setTweets((prev) => prev.filter((t) => t.tweet_id !== id));
+  const deleteTweet = async (id: number) => {
+    try {
+      await tweetsApi.deleteTweet(id);
+      setTweets((prev) => prev.filter((t) => t.tweet_id !== id));
+    } catch (err) {
+      console.error('Failed to delete tweet:', err);
+    }
   };
 
   const filteredTweets = tweets.filter(
     (t) =>
       t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.description.toLowerCase().includes(searchQuery.toLowerCase())
+      (t.description || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const safeHostname = (url: string): string => {
+    try {
+      return new URL(url).hostname;
+    } catch {
+      return url;
+    }
+  };
+
+  if (fetchLoading) {
+    return (
+      <div className="tweets-page">
+        <div className="empty-state">
+          <MessageSquareText />
+          <h3>Loading tweets...</h3>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="tweets-page">
@@ -134,16 +170,16 @@ const Tweets = () => {
               )}
               <div className="tweet-link-preview">
                 <LinkIcon size={12} />
-                <span>{new URL(tweet.tweet_link).hostname}</span>
+                <span>{safeHostname(tweet.tweet_link)}</span>
               </div>
               <div className="tweet-footer">
                 <span className="tweet-time">
                   <Clock size={12} />
                   {new Date(tweet.saved_at).toLocaleDateString()}
                 </span>
-                <span className={`badge ${tweet.visibility === 'public' ? 'badge-info' : 'badge-accent'}`}>
-                  {tweet.visibility === 'public' ? <Eye size={11} /> : <EyeOff size={11} />}
-                  {tweet.visibility}
+                <span className={`badge ${tweet.visibility ? 'badge-info' : 'badge-accent'}`}>
+                  {tweet.visibility ? <Eye size={11} /> : <EyeOff size={11} />}
+                  {tweet.visibility ? 'public' : 'private'}
                 </span>
               </div>
             </div>
@@ -197,15 +233,15 @@ const Tweets = () => {
                 <div className="visibility-toggle">
                   <button
                     type="button"
-                    className={`vis-btn ${newTweet.visibility === 'private' ? 'vis-btn--active' : ''}`}
-                    onClick={() => setNewTweet({ ...newTweet, visibility: 'private' })}
+                    className={`vis-btn ${!newTweet.visibility ? 'vis-btn--active' : ''}`}
+                    onClick={() => setNewTweet({ ...newTweet, visibility: false })}
                   >
                     <EyeOff size={14} /> Private
                   </button>
                   <button
                     type="button"
-                    className={`vis-btn ${newTweet.visibility === 'public' ? 'vis-btn--active' : ''}`}
-                    onClick={() => setNewTweet({ ...newTweet, visibility: 'public' })}
+                    className={`vis-btn ${newTweet.visibility ? 'vis-btn--active' : ''}`}
+                    onClick={() => setNewTweet({ ...newTweet, visibility: true })}
                   >
                     <Eye size={14} /> Public
                   </button>
