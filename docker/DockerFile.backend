@@ -1,0 +1,16 @@
+FROM node:20-slim
+
+WORKDIR /usr/src/app/server
+
+COPY server/package*.json ./
+
+RUN npm install
+
+COPY server/ .
+RUN npx tsc
+
+RUN npm prune --production
+
+EXPOSE 3000
+
+CMD ["node", "dist/cmd/server.js"]
