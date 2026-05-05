@@ -2,11 +2,10 @@ FROM node:20-slim
 
 WORKDIR /usr/src/app/server
 
-COPY server/package*.json ./
-
+COPY package*.json ./
 RUN npm install
 
-COPY server/ .
+COPY . .
 RUN npx tsc
 
 RUN npm prune --production
