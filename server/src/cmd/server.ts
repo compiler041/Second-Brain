@@ -21,7 +21,13 @@ dotenv.config();
 const app: Application = express();
 
 // Global Middleware
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({
+  origin: [
+    'https://secondbrain.sbs',
+    'http://localhost:5173'
+  ],
+  credentials: true
+}))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

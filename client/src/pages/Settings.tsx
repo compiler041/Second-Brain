@@ -1,19 +1,17 @@
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
-import { User, Shield, Eye, EyeOff, LogOut, Mail, Calendar, Sun, Moon, Monitor } from 'lucide-react';
+import { User, Shield, Eye, EyeOff, LogOut, Mail, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import './Settings.css';
 
 const Settings = () => {
   const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [privacyDefault, setPrivacyDefault] = useState<'private' | 'public'>('private');
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/landing');
   };
 
   return (
@@ -42,36 +40,6 @@ const Settings = () => {
               <span><Calendar size={14} /> Joined {user?.created_at ? new Date(user.created_at).toLocaleDateString() : '—'}</span>
             </div>
             <span className="badge badge-accent">{user?.role || 'user'}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Appearance */}
-      <div className="settings-section">
-        <h2 className="section-title">
-          {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
-          Appearance
-        </h2>
-        <div className="card">
-          <div className="setting-row">
-            <div className="setting-info">
-              <h4>Theme</h4>
-              <p>Switch between light and dark mode</p>
-            </div>
-            <div className="visibility-toggle">
-              <button
-                className={`vis-btn ${theme === 'light' ? 'vis-btn--active' : ''}`}
-                onClick={() => theme !== 'light' && toggleTheme()}
-              >
-                <Sun size={14} /> Light
-              </button>
-              <button
-                className={`vis-btn ${theme === 'dark' ? 'vis-btn--active' : ''}`}
-                onClick={() => theme !== 'dark' && toggleTheme()}
-              >
-                <Moon size={14} /> Dark
-              </button>
-            </div>
           </div>
         </div>
       </div>

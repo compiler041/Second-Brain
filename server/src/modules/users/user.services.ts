@@ -22,3 +22,25 @@ export const findUserByEmail = async (email: string) => {
   );
   return result.rows[0] || null;
 };
+
+export const findOrCreateGoogleUser = async (
+  email: string,
+  username: string,
+  googleSub: string
+) => {
+  // Check if user already exists
+  const existing = await findUserByEmail(email);
+  if (existing) {
+    return existing;
+  }
+
+  // Create new user without password (Google auth)
+  const result = await pool.query(
+    `INSERT INTO users (username, email, password)
+     VALUES ($1, $2, $3)
+     RETURNING user_id, username, email, role, created_at`,
+    [username, email, `google_${googleSub}`]
+  );
+
+  return result.rows[0];
+};

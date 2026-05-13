@@ -1,27 +1,24 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
 import {
-  LayoutDashboard,
   CheckSquare,
   FileText,
   MessageSquareText,
   Video,
   Star,
+  Clock,
   Settings,
   LogOut,
   Brain,
   Menu,
   X,
-  Sun,
-  Moon,
+  ArrowLeft,
 } from 'lucide-react';
 import { useState } from 'react';
 import './Layout.css';
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/tasks', icon: CheckSquare, label: 'Tasks' },
+  { to: '/', icon: CheckSquare, label: 'Tasks' },
   { to: '/notes', icon: FileText, label: 'Notes' },
   { to: '/tweets', icon: MessageSquareText, label: 'Tweets' },
   { to: '/videos', icon: Video, label: 'Videos' },
@@ -31,13 +28,12 @@ const navItems = [
 
 const Layout = () => {
   const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/landing');
   };
 
   return (
@@ -52,7 +48,7 @@ const Layout = () => {
         <div className="sidebar-header">
           <div className="sidebar-logo">
             <div className="logo-icon">
-              <Brain size={24} />
+              <Brain size={20} />
             </div>
             <span className="logo-text">Second Brain</span>
           </div>
@@ -72,25 +68,32 @@ const Layout = () => {
               }
               onClick={() => setSidebarOpen(false)}
             >
-              <item.icon size={20} />
+              <item.icon size={18} />
               <span>{item.label}</span>
             </NavLink>
           ))}
         </nav>
 
-        <div className="sidebar-footer">
-          <div className="user-info">
-            <div className="user-avatar">
-              {user?.username?.charAt(0).toUpperCase() || 'U'}
-            </div>
-            <div className="user-details">
-              <span className="user-name">{user?.username || 'User'}</span>
-              <span className="user-email">{user?.email || ''}</span>
-            </div>
-          </div>
-          <button className="logout-btn" onClick={handleLogout} title="Logout">
-            <LogOut size={18} />
+        <div className="sidebar-bottom">
+          <button className="back-to-landing" onClick={() => navigate('/landing')}>
+            <ArrowLeft size={14} />
+            <span>Back to landing</span>
           </button>
+
+          <div className="sidebar-footer">
+            <div className="user-info">
+              <div className="user-avatar">
+                {user?.username?.charAt(0).toUpperCase() || 'U'}
+              </div>
+              <div className="user-details">
+                <span className="user-name">{user?.username || 'User'}</span>
+                <span className="user-email">{user?.email || ''}</span>
+              </div>
+            </div>
+            <button className="logout-btn" onClick={handleLogout} title="Logout">
+              <LogOut size={16} />
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -100,18 +103,6 @@ const Layout = () => {
           <button className="menu-btn" onClick={() => setSidebarOpen(true)}>
             <Menu size={22} />
           </button>
-          <div className="topbar-right">
-            <span className="greeting">
-              Welcome back, <strong>{user?.username || 'User'}</strong>
-            </span>
-            <button
-              className="theme-toggle"
-              onClick={toggleTheme}
-              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-            >
-              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-          </div>
         </div>
 
         <div className="page-content">

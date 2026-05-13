@@ -24,3 +24,12 @@ export const signin = async (
   });
   return data;
 };
+
+export const googleAuth = async (
+  credential: string
+): Promise<AuthResponse> => {
+  const { data } = await client.post<AuthResponse>('/users/google', {
+    credential,
+  });
+  return data;
+};

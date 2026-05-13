@@ -3,9 +3,9 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import Dashboard from './pages/Dashboard';
 import Tasks from './pages/Tasks';
 import Notes from './pages/Notes';
 import Tweets from './pages/Tweets';
@@ -20,13 +20,20 @@ const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+const LandingRedirect = () => {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) return <div className="loading-screen"><div className="spinner" /></div>;
+  if (isAuthenticated) return <Navigate to="/" replace />;
+  return <Landing />;
+};
+
 function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            {/* Public routes */}
+            <Route path="/landing" element={<LandingRedirect />} />
             <Route
               path="/login"
               element={
@@ -44,7 +51,6 @@ function App() {
               }
             />
 
-            {/* Protected routes */}
             <Route
               element={
                 <ProtectedRoute>
@@ -52,8 +58,8 @@ function App() {
                 </ProtectedRoute>
               }
             >
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/tasks" element={<Tasks />} />
+              <Route path="/" element={<Tasks />} />
+              <Route path="/tasks" element={<Navigate to="/" replace />} />
               <Route path="/notes" element={<Notes />} />
               <Route path="/tweets" element={<Tweets />} />
               <Route path="/videos" element={<Videos />} />
@@ -61,8 +67,7 @@ function App() {
               <Route path="/settings" element={<Settings />} />
             </Route>
 
-            {/* Catch-all */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/landing" replace />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

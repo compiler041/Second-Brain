@@ -9,9 +9,11 @@ import {
   X,
   Clock,
   Play,
+  Heart,
 } from 'lucide-react';
 import type { YouTubeVideo } from '../types';
 import * as youtubeApi from '../api/youtube';
+import { useFavorites } from '../context/useFavorites';
 import './Videos.css';
 
 const extractVideoId = (url: string): string | null => {
@@ -33,6 +35,7 @@ const Videos = () => {
   });
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   // Fetch all videos on mount
   useEffect(() => {
@@ -104,14 +107,14 @@ const Videos = () => {
           <p>{videos.length} saved videos</p>
         </div>
         <button className="btn-primary" onClick={() => setShowModal(true)}>
-          <Plus size={18} />
+          <Plus size={16} />
           Save Video
         </button>
       </div>
 
       <div className="videos-toolbar">
         <div className="search-bar">
-          <Search size={18} />
+          <Search size={16} />
           <input
             placeholder="Search videos..."
             value={searchQuery}
@@ -126,7 +129,7 @@ const Videos = () => {
           <h3>{videos.length === 0 ? 'No saved videos' : 'No matching videos'}</h3>
           <p>
             {videos.length === 0
-              ? 'Build your personal YouTube video library.'
+              ? 'Build your personal video library.'
               : 'Try different search terms.'}
           </p>
           {videos.length === 0 && (
@@ -153,7 +156,7 @@ const Videos = () => {
                     />
                   ) : (
                     <div className="video-thumb-placeholder">
-                      <VideoIcon size={32} />
+                      <VideoIcon size={28} />
                     </div>
                   )}
                   <a
@@ -162,29 +165,36 @@ const Videos = () => {
                     rel="noopener noreferrer"
                     className="video-play-overlay"
                   >
-                    <Play size={28} fill="white" />
+                    <Play size={24} fill="white" />
                   </a>
                 </div>
                 <div className="video-info">
                   <div className="video-info-header">
                     <h3>{video.title}</h3>
                     <div className="video-actions-top">
+                      <button
+                        className={`favorite-btn ${isFavorite('video', video.video_id) ? 'is-favorite' : ''}`}
+                        onClick={() => toggleFavorite('video', video.video_id)}
+                        title="Toggle favorite"
+                      >
+                        <Heart size={13} />
+                      </button>
                       <a href={video.video_link} target="_blank" rel="noopener noreferrer" className="tweet-link-btn">
-                        <ExternalLink size={14} />
+                        <ExternalLink size={13} />
                       </a>
                       <button className="tweet-delete" onClick={() => deleteVideo(video.video_id)}>
-                        <X size={14} />
+                        <X size={13} />
                       </button>
                     </div>
                   </div>
                   {video.description && <p className="video-desc">{video.description}</p>}
                   <div className="video-footer">
                     <span className="tweet-time">
-                      <Clock size={12} />
+                      <Clock size={11} />
                       {new Date(video.saved_at).toLocaleDateString()}
                     </span>
                     <span className={`badge ${video.visibility ? 'badge-info' : 'badge-accent'}`}>
-                      {video.visibility ? <Eye size={11} /> : <EyeOff size={11} />}
+                      {video.visibility ? <Eye size={10} /> : <EyeOff size={10} />}
                       {video.visibility ? 'public' : 'private'}
                     </span>
                   </div>

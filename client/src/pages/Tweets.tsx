@@ -9,9 +9,11 @@ import {
   X,
   Clock,
   Link as LinkIcon,
+  Heart,
 } from 'lucide-react';
 import type { Tweet } from '../types';
 import * as tweetsApi from '../api/tweets';
+import { useFavorites } from '../context/useFavorites';
 import './Tweets.css';
 
 const Tweets = () => {
@@ -26,6 +28,7 @@ const Tweets = () => {
   });
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   // Fetch all tweets on mount
   useEffect(() => {
@@ -106,14 +109,14 @@ const Tweets = () => {
           <p>{tweets.length} saved tweets</p>
         </div>
         <button className="btn-primary" onClick={() => setShowModal(true)}>
-          <Plus size={18} />
+          <Plus size={16} />
           Save Tweet
         </button>
       </div>
 
       <div className="tweets-toolbar">
         <div className="search-bar">
-          <Search size={18} />
+          <Search size={16} />
           <input
             placeholder="Search tweets..."
             value={searchQuery}
@@ -147,9 +150,16 @@ const Tweets = () => {
             >
               <div className="tweet-card-header">
                 <div className="tweet-icon-wrap">
-                  <MessageSquareText size={18} />
+                  <MessageSquareText size={16} />
                 </div>
                 <div className="tweet-actions-top">
+                  <button
+                    className={`favorite-btn ${isFavorite('tweet', tweet.tweet_id) ? 'is-favorite' : ''}`}
+                    onClick={() => toggleFavorite('tweet', tweet.tweet_id)}
+                    title="Toggle favorite"
+                  >
+                    <Heart size={13} />
+                  </button>
                   <a
                     href={tweet.tweet_link}
                     target="_blank"
@@ -157,10 +167,10 @@ const Tweets = () => {
                     className="tweet-link-btn"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <ExternalLink size={14} />
+                    <ExternalLink size={13} />
                   </a>
                   <button className="tweet-delete" onClick={() => deleteTweet(tweet.tweet_id)}>
-                    <X size={14} />
+                    <X size={13} />
                   </button>
                 </div>
               </div>
@@ -169,16 +179,16 @@ const Tweets = () => {
                 <p className="tweet-desc">{tweet.description}</p>
               )}
               <div className="tweet-link-preview">
-                <LinkIcon size={12} />
+                <LinkIcon size={11} />
                 <span>{safeHostname(tweet.tweet_link)}</span>
               </div>
               <div className="tweet-footer">
                 <span className="tweet-time">
-                  <Clock size={12} />
+                  <Clock size={11} />
                   {new Date(tweet.saved_at).toLocaleDateString()}
                 </span>
                 <span className={`badge ${tweet.visibility ? 'badge-info' : 'badge-accent'}`}>
-                  {tweet.visibility ? <Eye size={11} /> : <EyeOff size={11} />}
+                  {tweet.visibility ? <Eye size={10} /> : <EyeOff size={10} />}
                   {tweet.visibility ? 'public' : 'private'}
                 </span>
               </div>

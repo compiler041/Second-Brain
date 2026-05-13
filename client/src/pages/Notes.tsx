@@ -7,9 +7,11 @@ import {
   EyeOff,
   X,
   Clock,
+  Heart,
 } from 'lucide-react';
 import type { Note } from '../types';
 import * as notesApi from '../api/notes';
+import { useFavorites } from '../context/useFavorites';
 import './Notes.css';
 
 const Notes = () => {
@@ -20,6 +22,7 @@ const Notes = () => {
   const [newNote, setNewNote] = useState({ title: '', context: '', visibility: true });
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   // Fetch all notes on mount
   useEffect(() => {
@@ -91,14 +94,14 @@ const Notes = () => {
           <p>{notes.length} notes</p>
         </div>
         <button className="btn-primary" onClick={() => setShowModal(true)}>
-          <Plus size={18} />
+          <Plus size={16} />
           New Note
         </button>
       </div>
 
       <div className="notes-toolbar">
         <div className="search-bar">
-          <Search size={18} />
+          <Search size={16} />
           <input
             placeholder="Search notes..."
             value={searchQuery}
@@ -113,7 +116,7 @@ const Notes = () => {
           <h3>{notes.length === 0 ? 'No notes yet' : 'No matching notes'}</h3>
           <p>
             {notes.length === 0
-              ? 'Write your first note — like a Notion doc.'
+              ? 'Write your first note — drafts, ideas, references.'
               : 'Try different search terms.'}
           </p>
           {notes.length === 0 && (
@@ -133,15 +136,27 @@ const Notes = () => {
             >
               <div className="note-card-header">
                 <h3>{note.title}</h3>
-                <button
-                  className="note-delete"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteNote(note.note_id);
-                  }}
-                >
-                  <X size={14} />
-                </button>
+                <div className="note-card-actions">
+                  <button
+                    className={`favorite-btn ${isFavorite('note', note.note_id) ? 'is-favorite' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite('note', note.note_id);
+                    }}
+                    title="Toggle favorite"
+                  >
+                    <Heart size={13} />
+                  </button>
+                  <button
+                    className="note-delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteNote(note.note_id);
+                    }}
+                  >
+                    <X size={13} />
+                  </button>
+                </div>
               </div>
               <p className="note-preview">
                 {(note.context || '').substring(0, 120) || 'No content'}
@@ -149,11 +164,11 @@ const Notes = () => {
               </p>
               <div className="note-footer">
                 <span className="note-time">
-                  <Clock size={12} />
+                  <Clock size={11} />
                   {new Date(note.created_at).toLocaleDateString()}
                 </span>
                 <span className={`badge ${note.visibility ? 'badge-info' : 'badge-accent'}`}>
-                  {note.visibility ? <Eye size={11} /> : <EyeOff size={11} />}
+                  {note.visibility ? <Eye size={10} /> : <EyeOff size={10} />}
                   {note.visibility ? 'public' : 'private'}
                 </span>
               </div>

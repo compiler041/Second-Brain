@@ -4,22 +4,24 @@ import {
   CheckCircle2,
   Circle,
   Search,
-  Filter,
   Calendar,
   X,
+  Heart,
 } from 'lucide-react';
 import type { Task } from '../types';
 import * as tasksApi from '../api/tasks';
+import { useFavorites } from '../context/useFavorites';
 import './Tasks.css';
 
 const Tasks = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+  const [filter, setFilter] = useState<'all' | 'active' | 'done'>('all');
   const [newTask, setNewTask] = useState({ title: '', description: '', due_date: '' });
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   // Fetch all tasks on mount
   useEffect(() => {
@@ -80,11 +82,11 @@ const Tasks = () => {
       t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (t.description || '').toLowerCase().includes(searchQuery.toLowerCase());
     if (filter === 'active') return !t.status && matchesSearch;
-    if (filter === 'completed') return t.status && matchesSearch;
+    if (filter === 'done') return t.status && matchesSearch;
     return matchesSearch;
   });
 
-  const completedCount = tasks.filter((t) => t.status).length;
+  const remainingCount = tasks.filter((t) => !t.status).length;
 
   if (fetchLoading) {
     return (
@@ -102,29 +104,18 @@ const Tasks = () => {
       <div className="page-header">
         <div>
           <h1>Tasks</h1>
-          <p>
-            {tasks.length} total · {completedCount} completed
-          </p>
+          <p>{remainingCount} remaining</p>
         </div>
         <button className="btn-primary" onClick={() => setShowModal(true)}>
-          <Plus size={18} />
+          <Plus size={16} />
           New Task
         </button>
       </div>
 
-      {/* Toolbar */}
+      {/* Filter tabs */}
       <div className="tasks-toolbar">
-        <div className="search-bar">
-          <Search size={18} />
-          <input
-            placeholder="Search tasks..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
         <div className="filter-tabs">
-          <Filter size={16} />
-          {(['all', 'active', 'completed'] as const).map((f) => (
+          {(['all', 'active', 'done'] as const).map((f) => (
             <button
               key={f}
               className={`filter-tab ${filter === f ? 'filter-tab--active' : ''}`}
@@ -133,6 +124,14 @@ const Tasks = () => {
               {f.charAt(0).toUpperCase() + f.slice(1)}
             </button>
           ))}
+        </div>
+        <div className="search-bar">
+          <Search size={16} />
+          <input
+            placeholder="Search tasks..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
       </div>
 
@@ -143,7 +142,7 @@ const Tasks = () => {
           <h3>{tasks.length === 0 ? 'No tasks yet' : 'No matching tasks'}</h3>
           <p>
             {tasks.length === 0
-              ? 'Create your first task to get started.'
+              ? 'Create your first task to get started'
               : 'Try adjusting your search or filter.'}
           </p>
           {tasks.length === 0 && (
@@ -164,7 +163,7 @@ const Tasks = () => {
                 className={`task-check ${task.status ? 'task-check--checked' : ''}`}
                 onClick={() => toggleStatus(task.task_id)}
               >
-                {task.status ? <CheckCircle2 size={22} /> : <Circle size={22} />}
+                {task.status ? <CheckCircle2 size={20} /> : <Circle size={20} />}
               </button>
               <div className="task-content">
                 <h3 className={task.status ? 'task-title--done' : ''}>{task.title}</h3>
@@ -174,18 +173,27 @@ const Tasks = () => {
                 <div className="task-meta">
                   {task.due_date && (
                     <span className="task-date">
-                      <Calendar size={13} />
+                      <Calendar size={12} />
                       {new Date(task.due_date).toLocaleDateString()}
                     </span>
                   )}
                   <span className={`badge ${task.status ? 'badge-success' : 'badge-warning'}`}>
-                    {task.status ? 'Completed' : 'Active'}
+                    {task.status ? 'Done' : 'Active'}
                   </span>
                 </div>
               </div>
-              <button className="task-delete" onClick={() => deleteTask(task.task_id)}>
-                <X size={16} />
-              </button>
+              <div className="task-actions">
+                <button
+                  className={`favorite-btn ${isFavorite('task', task.task_id) ? 'is-favorite' : ''}`}
+                  onClick={() => toggleFavorite('task', task.task_id)}
+                  title="Toggle favorite"
+                >
+                  <Heart size={14} />
+                </button>
+                <button className="task-delete" onClick={() => deleteTask(task.task_id)}>
+                  <X size={14} />
+                </button>
+              </div>
             </div>
           ))}
         </div>

@@ -6,7 +6,6 @@ import {
   Video,
   ArrowRight,
   Plus,
-  Clock,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
