@@ -10,7 +10,6 @@
   max-width: 400px;
 }
 
-/* Notes grid */
 .notes-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -96,7 +95,6 @@
   color: var(--text-muted);
 }
 
-/* Note viewer */
 .note-viewer {
   max-width: 600px;
 }
@@ -115,7 +113,12 @@
   white-space: pre-wrap;
 }
 
-/* Mobile */
+@media (max-width: 768px) {
+  .notes-page {
+    padding-bottom: calc(var(--bottom-nav-height) + 16px);
+  }
+}
+
 @media (max-width: 640px) {
   .notes-grid {
     grid-template-columns: 1fr;

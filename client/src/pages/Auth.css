@@ -26,7 +26,7 @@
 .auth-logo {
   width: 52px;
   height: 52px;
-  background: var(--accent-highlight);
+  background: var(--accent-primary);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
@@ -40,6 +40,7 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   margin-bottom: 8px;
+  color: var(--text-primary);
 }
 
 .auth-header p {
@@ -55,7 +56,7 @@
   border-radius: var(--radius-sm);
   font-size: 0.8125rem;
   margin-bottom: 20px;
-  border: 1px solid rgba(192, 90, 64, 0.15);
+  border: 1px solid rgba(160, 51, 58, 0.15);
   text-align: center;
 }
 
@@ -150,7 +151,7 @@
 }
 
 .auth-switch a:hover {
-  color: var(--accent-primary-hover, var(--accent-highlight));
+  color: var(--accent-highlight);
 }
 
 @media (max-width: 480px) {

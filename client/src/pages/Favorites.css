@@ -2,7 +2,6 @@
   max-width: 900px;
 }
 
-/* Category tabs */
 .fav-categories {
   display: flex;
   gap: 10px;
@@ -53,7 +52,6 @@
   margin-left: auto;
 }
 
-/* Favorite items */
 .fav-items {
   display: flex;
   flex-direction: column;
@@ -84,7 +82,12 @@
   line-height: 1.4;
 }
 
-/* Mobile */
+@media (max-width: 768px) {
+  .favorites-page {
+    padding-bottom: calc(var(--bottom-nav-height) + 16px);
+  }
+}
+
 @media (max-width: 640px) {
   .fav-categories {
     flex-direction: column;

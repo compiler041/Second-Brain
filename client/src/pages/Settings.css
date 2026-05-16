@@ -20,7 +20,6 @@
   color: var(--danger);
 }
 
-/* Profile card */
 .profile-card {
   display: flex;
   align-items: center;
@@ -31,7 +30,7 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: var(--accent-highlight);
+  background: var(--accent-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,7 +66,6 @@
   color: var(--text-secondary);
 }
 
-/* Setting rows */
 .setting-row {
   display: flex;
   align-items: center;
@@ -88,10 +86,15 @@
 }
 
 .danger-card {
-  border-color: rgba(192, 90, 64, 0.15);
+  border-color: rgba(160, 51, 58, 0.15);
 }
 
-/* Mobile */
+@media (max-width: 768px) {
+  .settings-page {
+    padding-bottom: calc(var(--bottom-nav-height) + 16px);
+  }
+}
+
 @media (max-width: 640px) {
   .profile-card {
     flex-direction: column;

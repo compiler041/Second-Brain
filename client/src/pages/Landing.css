@@ -10,7 +10,9 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--bg-primary);
+  background: rgba(252, 249, 239, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -33,7 +35,7 @@
 .landing-logo-icon {
   width: 32px;
   height: 32px;
-  background: var(--accent-highlight);
+  background: var(--accent-primary);
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -45,6 +47,7 @@
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: -0.02em;
+  color: var(--text-primary);
 }
 
 .landing-nav-links {
@@ -60,7 +63,7 @@
 }
 
 .landing-nav-link:hover {
-  color: var(--text-primary);
+  color: var(--accent-primary);
 }
 
 .landing-nav-cta {
@@ -89,7 +92,7 @@
 .landing-hero-tag {
   font-size: 0.75rem;
   letter-spacing: 0.12em;
-  color: var(--text-secondary);
+  color: var(--accent-primary);
   margin-bottom: 24px;
   font-weight: 500;
 }
@@ -128,7 +131,7 @@
 }
 
 .landing-hero-see:hover {
-  color: var(--text-primary);
+  color: var(--accent-primary);
 }
 
 /* ===== PREVIEW ===== */
@@ -168,9 +171,9 @@
   border-radius: 50%;
 }
 
-.dot-r { background: #EC6A5E; }
-.dot-y { background: #F5BF4F; }
-.dot-g { background: #61C454; }
+.dot-r { background: var(--danger); }
+.dot-y { background: var(--warning); }
+.dot-g { background: var(--success); }
 
 .preview-path {
   font-size: 0.8125rem;
@@ -216,7 +219,7 @@
 }
 
 .preview-dot--red {
-  background: var(--accent-highlight);
+  background: var(--accent-primary);
 }
 
 .preview-dot--empty {
@@ -256,9 +259,9 @@
   flex-shrink: 0;
 }
 
-.preview-saved-icon--red { background: rgba(192,90,64,0.12); color: var(--accent-highlight); }
-.preview-saved-icon--pink { background: rgba(192,90,64,0.08); color: var(--accent-highlight); }
-.preview-saved-icon--tan { background: rgba(196,163,90,0.12); color: var(--accent-tertiary); }
+.preview-saved-icon--red { background: var(--accent-glow); color: var(--accent-primary); }
+.preview-saved-icon--pink { background: var(--danger-bg); color: var(--danger); }
+.preview-saved-icon--tan { background: var(--warning-bg); color: var(--accent-secondary); }
 
 /* ===== ROOMS ===== */
 .landing-rooms {
@@ -323,12 +326,12 @@
 .room-icon {
   width: 36px;
   height: 36px;
-  background: var(--bg-primary);
+  background: var(--accent-glow);
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-secondary);
+  color: var(--accent-primary);
   margin-bottom: 14px;
 }
 
@@ -359,7 +362,7 @@
 .philosophy-label {
   font-size: 0.6875rem;
   letter-spacing: 0.15em;
-  color: var(--text-muted);
+  color: var(--accent-primary);
   margin-bottom: 28px;
   font-weight: 600;
 }
@@ -406,25 +409,25 @@
 }
 
 .landing-cta-title em {
-  color: var(--accent-highlight);
+  color: var(--accent-secondary);
 }
 
 .landing-cta-btn {
-  border-color: rgba(255,255,255,0.2);
+  border-color: rgba(252, 249, 239, 0.2);
   color: var(--text-light);
   background: transparent;
 }
 
 .landing-cta-btn:hover {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.3);
+  background: rgba(252, 249, 239, 0.08);
+  border-color: rgba(252, 249, 239, 0.3);
 }
 
 /* ===== FOOTER ===== */
 .landing-footer {
   padding: 24px 32px;
   background: var(--bg-dark);
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid rgba(252, 249, 239, 0.06);
 }
 
 .landing-footer-inner {
@@ -443,7 +446,7 @@
 
 .footer-copy {
   font-size: 0.8125rem;
-  color: rgba(255,255,255,0.45);
+  color: rgba(252, 249, 239, 0.4);
 }
 
 /* ===== MOBILE ===== */

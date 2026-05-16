@@ -1,12 +1,12 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
+  LayoutDashboard,
   CheckSquare,
   FileText,
   MessageSquareText,
   Video,
   Star,
-  Clock,
   Settings,
   LogOut,
   Brain,
@@ -17,8 +17,9 @@ import {
 import { useState } from 'react';
 import './Layout.css';
 
-const navItems = [
-  { to: '/', icon: CheckSquare, label: 'Tasks' },
+const sidebarNav = [
+  { to: '/', icon: LayoutDashboard, label: 'Home' },
+  { to: '/tasks', icon: CheckSquare, label: 'Tasks' },
   { to: '/notes', icon: FileText, label: 'Notes' },
   { to: '/tweets', icon: MessageSquareText, label: 'Tweets' },
   { to: '/videos', icon: Video, label: 'Videos' },
@@ -26,9 +27,18 @@ const navItems = [
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 
+const bottomNav = [
+  { to: '/', icon: LayoutDashboard, label: 'Home' },
+  { to: '/tasks', icon: CheckSquare, label: 'Tasks' },
+  { to: '/notes', icon: FileText, label: 'Notes' },
+  { to: '/tweets', icon: MessageSquareText, label: 'Tweets' },
+  { to: '/videos', icon: Video, label: 'Videos' },
+];
+
 const Layout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = () => {
@@ -58,7 +68,7 @@ const Layout = () => {
         </div>
 
         <nav className="sidebar-nav">
-          {navItems.map((item) => (
+          {sidebarNav.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -109,6 +119,26 @@ const Layout = () => {
           <Outlet />
         </div>
       </main>
+
+      {/* Mobile bottom navigation */}
+      <nav className="bottom-nav">
+        {bottomNav.map((item) => {
+          const isActive =
+            item.to === '/'
+              ? location.pathname === '/'
+              : location.pathname.startsWith(item.to);
+          return (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={`bottom-nav-item ${isActive ? 'bottom-nav-item--active' : ''}`}
+            >
+              <item.icon size={20} />
+              <span>{item.label}</span>
+            </NavLink>
+          );
+        })}
+      </nav>
     </div>
   );
 };

@@ -6,6 +6,7 @@ import Layout from './components/Layout';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Home from './pages/Home';
 import Tasks from './pages/Tasks';
 import Notes from './pages/Notes';
 import Tweets from './pages/Tweets';
@@ -58,8 +59,8 @@ function App() {
                 </ProtectedRoute>
               }
             >
-              <Route path="/" element={<Tasks />} />
-              <Route path="/tasks" element={<Navigate to="/" replace />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/tasks" element={<Tasks />} />
               <Route path="/notes" element={<Notes />} />
               <Route path="/tweets" element={<Tweets />} />
               <Route path="/videos" element={<Videos />} />

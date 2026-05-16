@@ -39,8 +39,8 @@
 }
 
 .filter-tab--active {
-  background: var(--bg-dark);
-  color: var(--text-light);
+  background: var(--accent-primary);
+  color: white;
 }
 
 /* Task list */
@@ -160,6 +160,10 @@
 
 /* Mobile */
 @media (max-width: 768px) {
+  .tasks-page {
+    padding-bottom: calc(var(--bottom-nav-height) + 16px);
+  }
+
   .tasks-toolbar {
     flex-direction: column;
     align-items: stretch;

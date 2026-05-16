@@ -11,7 +11,6 @@ export const createUser = async (
      RETURNING user_id, username, email, role, created_at`,
     [username, email, password]
   );
- 
   return result.rows[0];
 };
 
@@ -28,19 +27,21 @@ export const findOrCreateGoogleUser = async (
   username: string,
   googleSub: string
 ) => {
-  // Check if user already exists
-  const existing = await findUserByEmail(email);
-  if (existing) {
-    return existing;
-  }
+  // Check if user already exists by email
+  const existing = await pool.query(
+    'SELECT user_id, username, email, role, created_at FROM users WHERE email = $1',
+    [email]
+  );
+  if (existing.rows[0]) return existing.rows[0];
 
-  // Create new user without password (Google auth)
+  // Generate unique username to avoid conflicts with existing users
+  const uniqueUsername = `${username}_${Date.now()}`;
+
   const result = await pool.query(
     `INSERT INTO users (username, email, password)
      VALUES ($1, $2, $3)
      RETURNING user_id, username, email, role, created_at`,
-    [username, email, `google_${googleSub}`]
+    [uniqueUsername, email, `google_${googleSub}`]
   );
-
   return result.rows[0];
 };

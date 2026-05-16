@@ -21,6 +21,10 @@ dotenv.config();
 const app: Application = express();
 
 // Global Middleware
+app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'unsafe-none');
+  next();
+});
 app.use(cors({
   origin: [
     'https://secondbrain.sbs',
