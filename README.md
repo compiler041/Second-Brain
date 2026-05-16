@@ -180,7 +180,7 @@ docker push vaibhav0041/second-brain-client:vX
 ### Deploy on EC2
 
 ```bash
-ssh -i second-brain-key.pem ubuntu@your-ec2-ip
+ssh -i key.pem ubuntu@your-ec2-ip
 
 cd second-brain
 
