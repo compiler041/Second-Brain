@@ -1,181 +1,226 @@
+
 # Second Brain
 
-Second Brain is a full-stack productivity and content management application built using React (Frontend), Express.js (Backend), and PostgreSQL (pgAdmin). It helps users organize tasks, notes, and saved content such as tweets and YouTube videos in one centralized system.
+Second Brain is a full-stack personal knowledge management application for storing and organizing notes, tasks, tweets, and YouTube videos in one place.
+
+Live: https://secondbrain.sbs
 
 ---
 
 ## Features
 
-### Authentication and Users
-
-* User registration and login
-* Role-based access (user / admin)
-* Secure password storage
-
-### Task Management
-
-* Create, update, and delete tasks
-* Assign priority levels
-* Track completion status
-* Manage due dates
-
-### Notes System
-
-* Create and manage notes
-* Public and private visibility
-* Edit and update notes
-
-### Saved Content
-
-* Save tweets and YouTube videos
-* Add descriptions to saved content
-* Control visibility (private/public)
-
-### Favorites
-
-* Mark tasks, notes, tweets, or videos as favorites
-
-### Tags
-
-* Create and manage custom tags
-
-### Privacy Controls
-
-* Manage visibility and access levels
-
-### Activity Logs
-
-* Track user actions such as create, update, and delete operations
+- Create and manage notes
+- Track tasks and to-dos
+- Save tweets for later reference
+- Bookmark YouTube videos
+- JWT-based authentication
+- Google OAuth login
+- Production deployment with HTTPS and custom domain
 
 ---
 
 ## Tech Stack
 
-| Layer    | Technology |
-| -------- | ---------- |
-| Frontend | React.js   |
-| Backend  | Express.js |
-| Database | PostgreSQL |
-| Tooling  | pgAdmin    |
+### Frontend
+- React
+- Vite
+- TypeScript
+- React Router
+- Axios
+
+### Backend
+- Node.js
+- Express
+- TypeScript
+- PostgreSQL (NeonDB)
+- JWT Authentication
+- Google Identity Services OAuth
+
+### Infrastructure & DevOps
+- Docker
+- Docker Compose
+- Multi-stage Docker builds
+- AWS EC2 (Ubuntu 22.04)
+- Nginx reverse proxy
+- SSL with Certbot
+- Docker Hub image deployment pipeline
 
 ---
 
-## Database Schema Overview
+## Architecture
 
-The application uses PostgreSQL with the following core tables:
-
-* users: Stores user credentials and roles
-* tasks: Manages user tasks with priorities and status
-* notes: Stores user-created notes with visibility settings
-* tweets: Stores saved tweet links and metadata
-* youtube_videos: Stores saved video links and details
-* priority: Defines task priority levels
-* tags: Custom tags created by users
-* favorites: Tracks user-favorited content
-* privacy_settings: Manages user-level privacy configurations
-* activity_logs: Logs user actions for tracking and auditing
-
----
-
-## Project Structure
-
-```bash
-/client        -> React frontend
-/server        -> Express backend
-/database      -> SQL schema and queries
-```
+```text
+User Browser
+     │
+     ▼
+https://secondbrain.sbs
+     │
+     ▼
+AWS EC2 Instance
+     │
+     ├── Nginx (80/443)
+     │     ├── /      → React Client Container
+     │     └── /api   → Express Server Container
+     │
+     ├── Frontend Container (React + Vite)
+     └── Backend Container (Node.js + Express)
+                         │
+                         ▼
+                 NeonDB PostgreSQL
+````
 
 ---
 
-## Installation and Setup
+## Local Development
 
 ### Prerequisites
 
-* Node.js installed
-* PostgreSQL installed
-* pgAdmin (optional for DB management)
+* Node.js 20+
+* Docker Desktop
+* PostgreSQL or NeonDB
 
-### 1. Clone the Repository
+### Clone the Repository
 
 ```bash
-git clone <your-repo-url>
-cd <project-folder>
+git clone https://github.com/compiler041/second-brain
+cd second-brain
 ```
 
-### 2. Backend Setup
+### Install Dependencies
+
+```bash
+cd server && npm install
+cd ../client && npm install
+```
+
+### Environment Variables
+
+Create `server/.env`
+
+```env
+DATABASE_URL=your_database_url
+JWT_SECRET=your_jwt_secret
+GOOGLE_CLIENT_ID=your_google_client_id
+PORT=3000
+```
+
+Create `client/.env`
+
+```env
+VITE_API_URL=http://localhost:3000/api
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
+```
+
+### Run Locally
+
+Backend:
 
 ```bash
 cd server
-npm install
+npm run dev
 ```
 
-Create a `.env` file:
-
-```env
-PORT=5000
-DATABASE_URL=your_postgres_connection_string
-JWT_SECRET=your_secret_key
-```
-
-Run backend:
-
-```bash
-npm start
-```
-
-### 3. Frontend Setup
+Frontend:
 
 ```bash
 cd client
-npm install
-npm start
+npm run dev
 ```
 
 ---
 
-## API Overview
+## Docker Setup
 
-### Auth
+### Build Backend
 
-* POST /api/auth/register
-* POST /api/auth/login
+```bash
+docker build \
+  -t second-brain-server \
+  -f docker/DockerFile.backend ./server
+```
 
-### Tasks
+### Build Frontend
 
-* GET /api/tasks
-* POST /api/tasks
-* PUT /api/tasks/:id
-* DELETE /api/tasks/:id
+```bash
+docker build \
+  --build-arg VITE_API_URL=http://localhost:3000/api \
+  -t second-brain-client \
+  -f docker/DockerFile.frontend ./client
+```
 
-### Notes
+### Run Containers
 
-* GET /api/notes
-* POST /api/notes
-* PUT /api/notes/:id
-* DELETE /api/notes/:id
+```bash
+docker-compose up -d
+```
 
-### Content (Tweets and Videos)
+---
 
-* GET /api/tweets
-* POST /api/tweets
-* GET /api/videos
-* POST /api/videos
+## Deployment Workflow
 
-### Favorites
+### Build and Push Images
 
-* POST /api/favorites
-* GET /api/favorites
+```bash
+docker build \
+  -t vaibhav0041/second-brain-server:vX \
+  -f docker/DockerFile.backend ./server
+
+docker push vaibhav0041/second-brain-server:vX
+```
+
+```bash
+docker build \
+  --build-arg VITE_API_URL=https://secondbrain.sbs/api \
+  -t vaibhav0041/second-brain-client:vX \
+  -f docker/DockerFile.frontend ./client
+
+docker push vaibhav0041/second-brain-client:vX
+```
+
+### Deploy on EC2
+
+```bash
+ssh -i second-brain-key.pem ubuntu@your-ec2-ip
+
+cd second-brain
+
+docker-compose down
+docker-compose pull
+docker-compose up -d
+```
+
+---
+
+## Engineering Learnings
+
+* Reduced Docker image size from ~900MB to ~25MB using multi-stage builds
+* Learned that Vite environment variables must be injected at build time
+* Configured Nginx as a reverse proxy for frontend and backend routing
+* Implemented connection pool error handling for NeonDB idle disconnects
+* Configured React Router fallback routing using `try_files`
+* Managed OAuth edge cases including duplicate username conflicts
+
+---
+
+## Production Issues Solved
+
+| Issue                                    | Solution                                                      |
+| ---------------------------------------- | ------------------------------------------------------------- |
+| React Router 404 errors on refresh       | Added `try_files $uri $uri/ /index.html` in Nginx             |
+| Frontend calling localhost in production | Injected `VITE_API_URL` during Docker build                   |
+| NeonDB idle connection crashes           | Added pool-level and client-level error handling              |
+| OAuth duplicate key conflicts            | Implemented email-first lookup and unique username generation |
+| CORS failures during OAuth login         | Configured production domain in backend and Google Console    |
 
 ---
 
 ## Future Improvements
 
-* Add search and filtering
-* Implement real-time updates
-* Add notifications and reminders
-* Improve UI/UX design
-* Add file and image uploads
-* Implement OAuth login (Google, GitHub)
+* Add markdown editor for notes
+* Add search and tagging system
+* Add Redis caching
+* Add CI/CD with GitHub Actions
+* Add monitoring and centralized logging
 
 ---
 
@@ -183,4 +228,6 @@ npm start
 
 Vaibhav Rathod
 
----
+GitHub: [https://github.com/compiler041](https://github.com/compiler041)
+Live: [https://secondbrain.sbs](https://secondbrain.sbs)
+
